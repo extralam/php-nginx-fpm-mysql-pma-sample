@@ -1,0 +1,65 @@
+version: '2'
+services:
+  sample-web:
+    image: richarvey/nginx-php-fpm:latest
+    ports:
+      - "6080:80"
+    volumes:
+      - ../web:/var/www/html
+    #environment:
+      #- VIRTUAL_HOST=domain_name1
+    networks:
+      - front
+
+  sample-masterdb:
+    image: "bitnami/mariadb:latest"
+    container_name: sample-masterdb
+    #ports:
+    #  - "6306:3306"
+    networks:
+       - front
+       - back
+    volumes:
+      -  ../db/mariadb-persistence:/bitnami/mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=sample
+      - MARIADB_DATABASE=sample
+      - MARIADB_USER=sample
+      - MARIADB_PASSWORD=samplesample
+    restart: always
+
+  sample-phpmyadmin:
+     container_name: sample-phpmyadmin
+     image: phpmyadmin/phpmyadmin:latest
+     networks:
+       - front
+       - back
+     ports:
+       - 6081:80
+     environment:
+       - PMA_HOSTS=sample-masterdb
+       - PMA_ARBITRARY=1
+       - PMA_USER=root
+       - PMA_PASSWORD=root
+       #- VIRTUAL_HOST=domain_name2
+
+  # nginx-proxy:
+  #   image: dbendelman/nginx-proxy
+  #   #image: jwilder/nginx-proxy
+  #   container_name: nginx-proxy
+  #   networks:
+  #     - front
+  #     - back
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro
+  #     - ./my_proxy.conf:/etc/nginx/conf.d/my_proxy.conf:ro
+  #     - ../vhost.d:/etc/nginx/vhost.d:ro
+
+networks:
+  front:
+    driver: bridge
+  back:
+    driver: bridge

@@ -1,7 +1,7 @@
 version: '2'
 services:
   sample-web:
-    image: richarvey/nginx-php-fpm:latest
+    image: richarvey/nginx-php-fpm:1.4.1
     ports:
       - "6080:80"
     volumes:
